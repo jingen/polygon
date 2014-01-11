@@ -1,10 +1,13 @@
+# shape class, instance variable: id, points
 class Shape
   attr_reader :id, :points
+  # initialize shape object with id (unique string to identify this shap), and points (all vertices of this shape)
   def initialize(shape = {})
     @id = shape[:id] unless shape[:id].nil?
     @points = parse(shape[:point]) unless shape[:point].nil?
   end
 
+  # calculate zcrossproduct for checking if this shape is polygon
   def zcrossproduct(point1, point2, point3)
     dx1 = point2.x - point1.x
     dy1 = point2.y - point1.y
@@ -17,6 +20,7 @@ class Shape
     @is_polygon ||= check_polygon
   end
 
+  #The polygon is convex if the z-components of the cross products are either all positive or all negative. Otherwise the polygon is nonconvex.
   def check_polygon
     return false if @points.length < 3
     zpoints = Array.new(@points)
@@ -29,6 +33,7 @@ class Shape
     return true
   end
 
+  # check if the given point is inside the shape or not
   def point_is_inside(point)
     result = false
     vertex1 = @points.length - 1
@@ -42,6 +47,7 @@ class Shape
     return result
   end
 
+  # check if this shape surrounds the given shape
   def surrounds(shape)
     shape.points.each do |point|
       return false unless point_is_inside(point)
@@ -49,10 +55,12 @@ class Shape
     return true
   end
 
+  # check if this shape is inside the given shape
   def is_inside(shape)
     shape.surrounds(self)
   end
 
+  # check if two segments intersects
   def segments_intersection(a, b, c, d)
     denominator = (b.y - a.y)*(d.x - c.x) - (a.x - b.x)*(c.y - d.y) 
     return false if denominator == 0
@@ -65,6 +73,7 @@ class Shape
     end
   end
 
+  # check if this shape intersects the given shape
   def intersects(shape)
     p1 = shape.points.length - 1
     for p2 in 0...shape.points.length
@@ -80,10 +89,12 @@ class Shape
     return false
   end
 
+  # check if this shape is separate the given shape
   def is_separate(shape)
     !surrounds(shape) && !is_inside(shape) && !intersects(shape)
   end
 
+  # return the relation of this shape and the given shape
   def get_relation(shape)
     if surrounds(shape)
       return "surrounds"
