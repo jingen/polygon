@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 
 require "test/unit"
 require "json"
@@ -10,17 +10,18 @@ class PolygonDetecter < Test::Unit::TestCase
     JSON.parse(File.new(filename, 'r').read, symbolize_names: true)
   end
 
+  def gen_shapes
+    input_file = ARGV[0].nil? ? "example.dat" : ARGV[0]
+    shapes_json = gen_json(input_file)
+    shapes_json[:geometry][:shape].map do |shape_json|
+      Shape.new(shape_json)
+    end
+  end
+
   def test_main
     puts "\n--------------------- The following is the result: -----------------------\n"
-    input_data = ARGV[0].nil? ? "shapes.dat" : ARGV[0]
-    shapes = gen_json(input_data)
-
-    ps = shapes[:geometry][:shape][0]
-    puts ps
-    pts = Shape.new(ps).points
-    pts.each do |pt|
-      p pt
-    end
+    shapes = gen_shapes
+    pp shapes
 
 
   end
